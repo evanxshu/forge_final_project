@@ -3,10 +3,10 @@ fetch(url)
 	.then((resp) => resp.json())
 	.then(function(data) {
     	
-		let big_object = data.class_schedules
-		
+		const big_array = data.class_schedules.records
+		const with_meeting_days = big_array.filter(course => course[8] != "")
 
-		console.log(big_object)
+		console.log(with_meeting_days)
 
 
 
