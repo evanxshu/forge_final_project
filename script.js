@@ -93,8 +93,8 @@ const zeroPad = (num, places) => {
   }
 
 function blockToTime (block) {
-	let hours = Math.floor(block /12)
-	let minutes = (block - hours*12)*5
+	let hours = Math.floor(parseInt(block)/12)
+	let minutes = ((parseInt(block)) - hours*12)*5
 	let padHours = zeroPad(hours+8, 2)
 	let padMinutes = zeroPad(minutes, 2)
 	return `${padHours}:${padMinutes}:00`
@@ -181,13 +181,13 @@ fetch(url)
 		})
 
 
-
+		console.log(finalBlocksByWeek)
 		// DRAWING THE GRAPH
 
 		// set the dimensions and margins of the graph
 		const margin = {top: 30, right: 30, bottom: 30, left: 60},
 			width = 1000 - margin.left - margin.right,
-			height = 900 - margin.top - margin.bottom,
+			height = 700 - margin.top - margin.bottom,
 			times = ["8AM", "9AM", "10AM", "11AM", "Noon", "1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM", "10PM"],
 			days = ["M", "T", "W", "R", "F"];
 
@@ -248,6 +248,7 @@ fetch(url)
 		const tooltip = d3.select('body').append('div')
 			.attr('id', 'tooltip')
 			.style('position', 'absolute')
+			.style('font-size', '10px')
 			.style("z-index", "10")
 			.style('border', '0px')
 			.style('border-radius', '8px')
@@ -269,18 +270,19 @@ fetch(url)
 				.style('fill', (d) => color(d[2]))
 				.on("mouseover", function(){
 					d3.select(this).style('opacity', 0.5)
-					thisData = d3.select(this).data()
-					tooltip.html(acronymToDay(thisData[0][0]) + '</br>' + blockToRange(thisData[0][1]))
-					
-					
-					
-					.style('opacity', 1)
+					thisData = d3.select(this).data()[0]
+					tooltip.html(acronymToDay(thisData[0]) + '</br>' + blockToRange(thisData[1]-1)
+					+ '</br>' + `There are ${thisData[2]} classes </br> taking place at this time`)
+					.style('opacity', 0.85)
 				})
 				.on('mouseout', function(){
 					d3.select(this).style('opacity', 1)
 					tooltip.style('opacity', 0)
 				})
-
+				.on('mousemove', function(event){
+					tooltip.style('left', d3.pointer(event)[0]+20 + 'px')
+					tooltip.style('top', d3.pointer(event)[1]+20 + 'px')
+				})
 	}).catch(function(error) {
 		console.log('Fetch failed!');
 	});
