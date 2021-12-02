@@ -27,6 +27,21 @@ button {
   line-height: 30px;
   transition: background, color 0.1s ease-in-out;
 }
+button.search{
+
+    display: inline-block;
+    outline: 0;
+    border: 0;
+    cursor: pointer;
+    background-color: #4299e1;
+    border-radius: 50px;
+    padding: 8px 16px;
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+    line-height: 26px;
+
+}
 button:hover {
   background-color: #000;
   color: #fff;
@@ -39,9 +54,10 @@ button.active-button {
 input {
   box-shadow: inset #abacaf 0 0 0 2px;
   border: 0;
+  display: inline-block;
   background: rgba(0, 0, 0, 0);
   appearance: none;
-  width: 400px;
+  width: 200px;
   position: relative;
   border-radius: 3px;
   padding: 9px 12px;

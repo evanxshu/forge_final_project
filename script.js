@@ -174,9 +174,9 @@ fetch(url)
     const fall2022_array = with_meeting_days.filter(
       (course) => course[12] == "2022 Fall"
     );
-    console.log(fall2021_array);
+
     const anth_fall2021 = fall2021_array.filter((course) => course[0] == "ANTH");
-    console.log(anth_fall2021);
+
     // check specific start times with these comments:
     // const monday = fall2021_array.filter(course => course[8].includes("M"))
     // console.log(monday.filter(course => course[9] == ""))
@@ -301,12 +301,16 @@ fetch(url)
     let fall2021button = d3.select("#fall2021button");
     let spring2022button = d3.select("#spring2022button");
     let fall2022button = d3.select("#fall2022button");
+	let inputClass = d3.select('#inputClass')
+	let inputClassValue = inputClass.property('value')
+	let activeArray = fall2021_array
 
     fall2021button.on("click", function(){
 		fall2021button.classed('active-button', true),
 		spring2022button.classed('active-button', false),
 		fall2022button.classed('active-button', false)
-      drawGraph(compileEverything(fall2021_array))
+		activeArray = fall2021_array
+      	drawGraph(compileEverything(fall2021_array))
 	}
 	
     );
@@ -314,6 +318,7 @@ fetch(url)
 		fall2021button.classed('active-button', false),
 		spring2022button.classed('active-button', true),
 		fall2022button.classed('active-button', false)
+		activeArray = spring2022_array
 		drawGraph(compileEverything(spring2022_array))
 	}
     );
@@ -321,9 +326,38 @@ fetch(url)
 		fall2021button.classed('active-button', false),
 		spring2022button.classed('active-button', false),
 		fall2022button.classed('active-button', true)
+		activeArray = fall2022_array
 		drawGraph(compileEverything(fall2022_array))
 	}
     );
+
+	
+	function generateSpecificArray(coursecode){
+		if (coursecode){
+			let courseCodeArray = coursecode.split(" ")
+			if (courseCodeArray.length == 1){
+				let newActiveArray = activeArray.filter((course) => course[0] == courseCodeArray[0].toUpperCase())
+				return (newActiveArray.length > 0? newActiveArray: activeArray)
+			} else if (courseCodeArray.length == 2) {
+				let newActiveArray2 = activeArray.filter((course) => (course[0] == courseCodeArray[0].toUpperCase())&&(course[1] == courseCodeArray[1]))
+				return (newActiveArray2.length > 0? newActiveArray2: activeArray)
+			} else{
+				return activeArray
+			}
+		}
+	}
+
+	inputClass.on('input', ()=>{
+		inputClassValue = inputClass.property('value')
+	})
+
+	d3.select('button.search').on('click', ()=>{
+		console.log(activeArray)
+		let specificArray = generateSpecificArray(inputClassValue)
+		console.log(specificArray)
+		drawGraph(compileEverything(specificArray))
+	})
+
   })
   .catch(function (error) {
     console.log("Fetch failed!");
