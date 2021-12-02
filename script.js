@@ -175,7 +175,7 @@ fetch(url)
       (course) => course[12] == "2022 Fall"
     );
     console.log(fall2021_array);
-    const anth_fall2021 = fall2021_array.filter((course) => course[0] == "AAS");
+    const anth_fall2021 = fall2021_array.filter((course) => course[0] == "ANTH");
     console.log(anth_fall2021);
     // check specific start times with these comments:
     // const monday = fall2021_array.filter(course => course[8].includes("M"))
@@ -302,14 +302,27 @@ fetch(url)
     let spring2022button = d3.select("#spring2022button");
     let fall2022button = d3.select("#fall2022button");
 
-    fall2021button.on("click", () =>
+    fall2021button.on("click", function(){
+		fall2021button.classed('active-button', true),
+		spring2022button.classed('active-button', false),
+		fall2022button.classed('active-button', false)
       drawGraph(compileEverything(fall2021_array))
+	}
+	
     );
-    spring2022button.on("click", () =>
-      drawGraph(compileEverything(spring2022_array))
+    spring2022button.on("click", function(){
+		fall2021button.classed('active-button', false),
+		spring2022button.classed('active-button', true),
+		fall2022button.classed('active-button', false)
+		drawGraph(compileEverything(spring2022_array))
+	}
     );
-    fall2022button.on("click", () =>
-      drawGraph(compileEverything(fall2022_array))
+    fall2022button.on("click", function(){
+		fall2021button.classed('active-button', false),
+		spring2022button.classed('active-button', false),
+		fall2022button.classed('active-button', true)
+		drawGraph(compileEverything(fall2022_array))
+	}
     );
   })
   .catch(function (error) {

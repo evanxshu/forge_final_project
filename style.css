@@ -1,14 +1,62 @@
 #tooltip {
-    position: absolute;
-    text-align: center;
-    z-index: 10;
-    border: 0px;
-    padding: 10px;
-    background: whitesmoke;
-    border-radius: 8px;
-    pointer-events: none;
-    font-size: small;
+  position: absolute;
+  text-align: center;
+  z-index: 10;
+  border: 0px;
+  padding: 10px;
+  background: whitesmoke;
+  border-radius: 8px;
+  pointer-events: none;
+  font-size: small;
 }
 
+button {
+  display: inline-block;
+  outline: 0;
+  text-align: center;
+  cursor: pointer;
+  padding: 17px 30px;
+  border: 0;
+  color: #fff;
+  font-size: 17.5px;
+  border: 2px solid transparent;
+  border-color: #000;
+  color: #000;
+  background: transparent;
+  font-weight: 800;
+  line-height: 30px;
+  transition: background, color 0.1s ease-in-out;
+}
+button:hover {
+  background-color: #000;
+  color: #fff;
+}
+button.active-button {
+  background-color: #000;
+  color: #fff;
+}
 
-
+input {
+  box-shadow: inset #abacaf 0 0 0 2px;
+  border: 0;
+  background: rgba(0, 0, 0, 0);
+  appearance: none;
+  width: 400px;
+  position: relative;
+  border-radius: 3px;
+  padding: 9px 12px;
+  line-height: 1.4;
+  color: rgb(0, 0, 0);
+  font-size: 16px;
+  font-weight: 400;
+  height: 40px;
+  transition: all 0.2s ease;
+}
+input:hover {
+  box-shadow: 0 0 0 0 #fff inset, #1de9b6 0 0 0 2px;
+}
+input:focus {
+  background: #fff;
+  outline: 0;
+  box-shadow: 0 0 0 0 #fff inset, #1de9b6 0 0 0 3px;
+}
