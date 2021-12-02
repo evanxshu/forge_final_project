@@ -119,6 +119,136 @@ function acronymToDay (letter) {
 	}
 }
 
+function compileEverything(array) {
+	weeklyCourses = {
+		M: [],
+		T: [],
+		W: [],
+		R: [],
+		F: []
+	}
+	weeklyBlocks = {}
+	finalBlocksByWeek = {}
+
+	array.forEach(findDays) // organizes all classes by day in weekly courses
+	Object.keys(weeklyCourses).forEach((day) => {
+		blocksForEachClass = sortEachDay(weeklyCourses[day])
+		weeklyBlocks[day]= blocksForEachClass
+
+	})
+
+	daysOfTheWeek = ["M", "T", "W", "R", "F"]
+	daysOfTheWeek.forEach((day) =>{
+		finalBlocksByWeek[day] = countOneDayBlocks(weeklyBlocks[day])
+	})
+
+	daysOfTheWeek.forEach((day) =>{
+		Object.keys(finalBlocksByWeek[day]).forEach((block) =>{
+			if (block >168){
+				delete finalBlocksByWeek[day][block]
+			}
+		})
+	})
+
+	final_array = []
+	daysOfTheWeek.forEach((day)=>{
+		Object.keys(finalBlocksByWeek[day]).forEach((block) =>{
+			let new_triplet = [day,block,finalBlocksByWeek[day][block]]
+			final_array.push(new_triplet)
+		})
+	})
+
+	return final_array
+}
+
+function drawGraph(currentArray){
+	// set the dimensions and margins of the graph
+	const margin = {top: 30, right: 30, bottom: 30, left: 60},
+	width = 1000 - margin.left - margin.right,
+	height = 700 - margin.top - margin.bottom,
+	times = ["8AM", "9AM", "10AM", "11AM", "Noon", "1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM", "10PM"],
+	days = ["M", "T", "W", "R", "F"];
+
+
+	//append svg
+	let svg = d3.select('#dataviz')
+				.append('svg')
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom)
+				.style("border", "1px solid grey")
+				.append("g")
+				.attr("transform",
+						"translate(" + margin.left + "," + margin.top + ")");
+
+	//Build xScale and xAxis
+	let xScale = d3.scaleBand()
+			.range([0,width])
+			.domain(days)
+			.padding(0.05);
+
+	let xAxis = d3.axisBottom(xScale)
+	let xTickLabels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+	xAxis.tickFormat((d,i) => xTickLabels[i])
+		svg.append('g')
+			.attr('transform', `translate(0, ${height})`)
+			.call(xAxis)
+	
+	//Build yScale and xAxis
+	let yScale = d3.scaleBand()
+			.range([height,0])
+			.domain(range(168, 0, -1))
+			.padding(0);	
+			
+	let yAxis = d3.axisLeft(yScale);
+	svg.append('g')
+			.call(yAxis.tickValues(range(0,169,12)).tickFormat((d,i) => times[i]))
+	
+
+	//Color Scale
+	let real_max = Math.max(...currentArray.map(block => block[2]))
+	let color = d3.scaleSequential()
+		.domain([0, real_max])
+		.interpolator(d3.interpolateMagma);
+
+	//Make Tooltip
+	const tooltip = d3.select('body').append('div')
+		.attr('id', 'tooltip')
+		.style('opacity', 0)
+
+	//add the data rects!
+	svg.selectAll("rect")
+		.data(currentArray)
+		.enter()
+		.append("rect")
+			.attr('x', (d) => xScale(d[0]))
+			.attr('y', (d) => yScale(d[1]))
+			.attr('width', xScale.bandwidth())
+			.attr('height', yScale.bandwidth())
+			.style('fill', (d) => color(d[2]))
+			.on("mouseover", function(){
+				d3.select(this).style('opacity', 0.5)
+				thisData = d3.select(this).data()[0]
+				tooltip.html(acronymToDay(thisData[0]) + '</br>' + blockToRange(thisData[1]-1)
+				+ '</br>' + `There are ${thisData[2]} classes </br> taking place at this time`)
+				.style('opacity', 0.85)
+			})
+			.on('mouseout', function(){
+				d3.select(this).style('opacity', 1)
+				tooltip.style('opacity', 0)
+			})
+			.on('mousemove', function(event){
+				tooltip.style('left', d3.pointer(event)[0]+30 + 'px')
+				tooltip.style('top', d3.pointer(event)[1]+30 + 'px')
+			})
+
+	svg.append("text")
+			.attr('x', (width/2))
+			.attr('y', 10 - (margin.top/2))
+			.attr('text-anchor', 'middle')
+			.style('font-size', '20px')
+			.style('font-family', 'Courier New')
+			.text('UVA Classes Heat Map By Semester')
+	}
 
 fetch(url)
 	.then((resp) => resp.json())
@@ -127,162 +257,47 @@ fetch(url)
 		const big_array = data.class_schedules.records
 		const with_meeting_days = big_array.filter(course => course[8] != "")
 		const fall2021_array = with_meeting_days.filter(course => course[12] == "2021 Fall")
-	
+		const spring2022_array = with_meeting_days.filter(course => course[12] == "2022 Spring")
+		const fall2022_array = with_meeting_days.filter(course => course[12] == "2022 Fall")
 		// check specific start times with these comments:
 		// const monday = fall2021_array.filter(course => course[8].includes("M"))
 		// console.log(monday.filter(course => course[9] == ""))
 
-
-		weeklyCourses = {
-			M: [],
-			T: [],
-			W: [],
-			R: [],
-			F: []
-		}
-
+		let compiledFinalArray = compileEverything(fall2021_array)
 		
-		weeklyBlocks = {}
-		finalBlocksByWeek = {}
+		drawGraph(compiledFinalArray)
+
+		let fall2021button = d3.select('#fall2021button')
+		let spring2022button = d3.select('#spring2022button')
+		let fall2022button = d3.select('#fall2022button')
 		
-		function compileEverything(array) {
-			array.forEach(findDays) // organizes all classes by day in weekly courses
-			Object.keys(weeklyCourses).forEach((day) => {
-				blocksForEachClass = sortEachDay(weeklyCourses[day])
-				weeklyBlocks[day]= blocksForEachClass
-
-			})
-
-			daysOfTheWeek = ["M", "T", "W", "R", "F"]
-			daysOfTheWeek.forEach((day) =>{
-				finalBlocksByWeek[day] = countOneDayBlocks(weeklyBlocks[day])
-			})
-
-			daysOfTheWeek.forEach((day) =>{
-				Object.keys(finalBlocksByWeek[day]).forEach((block) =>{
-					if (block >168){
-						delete finalBlocksByWeek[day][block]
-					}
-				})
-			})
-		}
-
-
-		compileEverything(fall2021_array)
-
-
-		final_array = []
-		daysOfTheWeek = ["M", "T", "W", "R", "F"]
-		daysOfTheWeek.forEach((day)=>{
-			Object.keys(finalBlocksByWeek[day]).forEach((block) =>{
-				let new_triplet = [day,block,finalBlocksByWeek[day][block]]
-				final_array.push(new_triplet)
-			})
+		spring2022button.on('click', function() {
+			spring2022button.style('opacity', 1)
+			fall2021button.style('opacity', 0.2)
+			fall2022button.style('opacity', 0.2)
+			let svg = d3.select("#dataviz")
+			svg.selectAll('*').remove()
+			drawGraph(compileEverything(spring2022_array))
 		})
 
-
-		console.log(finalBlocksByWeek)
-		// DRAWING THE GRAPH
-
-		// set the dimensions and margins of the graph
-		const margin = {top: 30, right: 30, bottom: 30, left: 60},
-			width = 1000 - margin.left - margin.right,
-			height = 700 - margin.top - margin.bottom,
-			times = ["8AM", "9AM", "10AM", "11AM", "Noon", "1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM", "10PM"],
-			days = ["M", "T", "W", "R", "F"];
-
-
-		//append svg
-		let svg = d3.select('#dataviz')
-					.append('svg')
-					.attr("width", width + margin.left + margin.right)
-					.attr("height", height + margin.top + margin.bottom)
-					.style("border", "1px solid grey")
-					.append("g")
-					.attr("transform",
-        					"translate(" + margin.left + "," + margin.top + ")");
-		
-		
-		
-		//Build xScale
-		let xScale = d3.scaleBand()
-				.range([0,width])
-				.domain(days)
-				.padding(0.05);
-		
-		let xAxis = d3.axisBottom(xScale)
-		let xTickLabels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-		xAxis.tickFormat((d,i) => xTickLabels[i])
-			svg.append('g')
-				.attr('transform', `translate(0, ${height})`)
-				.call(xAxis)
-			
-		//Build yScale
-		let yScale = d3.scaleBand()
-				.range([height,0])
-				.domain(range(168, 0, -1))
-				.padding(0);
-			
-		let yAxis = d3.axisLeft(yScale);
-
-		svg.append('g')
-				.call(yAxis.tickValues(range(0,169,12)).tickFormat((d,i) => times[i]))
-			
-
-		//Color Scale
-		const keys = ["M", "T", "W", "R", "F"]
-		max_values = []
-		keys.forEach((key) =>{
-			let arr = Object.values(finalBlocksByWeek[key])
-			let max = Math.max(...arr)
-			max_values.push(max);
+		fall2021button.on('click', function() {
+			fall2021button.style('opacity', 1)
+			spring2022button.style('opacity', 0.2)
+			fall2022button.style('opacity', 0.2)
+			let svg = d3.select("#dataviz")
+			svg.selectAll('*').remove()
+			drawGraph(compileEverything(fall2021_array))
 		})
-		let real_max = Math.max(...max_values)
 
-
-		let color = d3.scaleSequential()
-			.domain([0, real_max])
-			.interpolator(d3.interpolateMagma);
+		fall2022button.on('click', function() {
+			fall2022button.style('opacity', 1)
+			fall2021button.style('opacity', 0.2)
+			spring2022button.style('opacity', 0.2)
+			let svg = d3.select("#dataviz")
+			svg.selectAll('*').remove()
+			drawGraph(compileEverything(fall2022_array))
+		})
 		
-
-		const tooltip = d3.select('body').append('div')
-			.attr('id', 'tooltip')
-			.style('position', 'absolute')
-			.style('font-size', '10px')
-			.style("z-index", "10")
-			.style('border', '0px')
-			.style('border-radius', '8px')
-			.style('padding', '10px')
-			.style('text-align', 'center')
-			.style('background', 'white')
-			.style('opacity', 0)
-			.style('pointer-events', 'none')
-
-		//add the data rects!
-		svg.selectAll("rect")
-			.data(final_array)
-			.enter()
-			.append("rect")
-				.attr('x', (d) => xScale(d[0]))
-				.attr('y', (d) => yScale(d[1]))
-				.attr('width', xScale.bandwidth())
-				.attr('height', yScale.bandwidth())
-				.style('fill', (d) => color(d[2]))
-				.on("mouseover", function(){
-					d3.select(this).style('opacity', 0.5)
-					thisData = d3.select(this).data()[0]
-					tooltip.html(acronymToDay(thisData[0]) + '</br>' + blockToRange(thisData[1]-1)
-					+ '</br>' + `There are ${thisData[2]} classes </br> taking place at this time`)
-					.style('opacity', 0.85)
-				})
-				.on('mouseout', function(){
-					d3.select(this).style('opacity', 1)
-					tooltip.style('opacity', 0)
-				})
-				.on('mousemove', function(event){
-					tooltip.style('left', d3.pointer(event)[0]+20 + 'px')
-					tooltip.style('top', d3.pointer(event)[1]+20 + 'px')
-				})
 	}).catch(function(error) {
 		console.log('Fetch failed!');
 	});
