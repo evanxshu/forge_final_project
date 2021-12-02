@@ -165,7 +165,7 @@ function drawGraph(currentArray){
 	// set the dimensions and margins of the graph
 	const margin = {top: 30, right: 30, bottom: 30, left: 60},
 	width = 1000 - margin.left - margin.right,
-	height = 700 - margin.top - margin.bottom,
+	height = 900 - margin.top - margin.bottom,
 	times = ["8AM", "9AM", "10AM", "11AM", "Noon", "1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM", "10PM"],
 	days = ["M", "T", "W", "R", "F"];
 
