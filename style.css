@@ -105,7 +105,7 @@ input:focus {
 }
 
 .alert {
-  font-size: 12px;
+  font-size: medium;
   font-weight: 400;
   padding: 20px;
   background-color: #2c2c2c; /* Red */
