@@ -233,7 +233,7 @@ fetch(url)
     
     let yAxis = d3
       .axisLeft(yScale)
-      .tickValues(range(0, 168, 12))
+      .tickValues(range(0, 169, 12))
       .tickFormat((d, i) => times[i]);
     svg
       .append("g")
