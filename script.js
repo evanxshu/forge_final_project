@@ -238,9 +238,7 @@ fetch(url)
       .tickSize(-width)
       .tickSizeOuter(0);
 
-    const halfBandwidth = yScale.bandwidth()/2
-
-
+    const halfBandwidth = yScale.bandwidth() / 2;
 
     //Make Tooltip
     const tooltip = d3
@@ -314,14 +312,13 @@ fetch(url)
         .duration(800)
         .style("fill", (d) => color(d[2]));
 
-        svg.select('.yAxis').remove()
-        svg
+      svg.select(".yAxis").remove();
+      svg
         .append("g")
         .attr("class", "yAxis")
         .attr("transform", `translate(0, ${halfBandwidth})`)
         .call(yAxis);
     }
-  
 
     //Draw initial graph
 
@@ -398,7 +395,7 @@ fetch(url)
         drawGraph(drawnArray);
       } else {
         colorCounter = 0;
-        drawGraph(cdrawnArray);
+        drawGraph(drawnArray);
       }
     });
     // search button
