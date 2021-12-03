@@ -295,15 +295,16 @@ fetch(url)
         .style("font-family", "Courier New")
         .text("UVA Classes Heat Map");
     }
-	//Draw initial graph
+	  //Draw initial graph
     drawGraph(compileEverything(fall2021_array));
 
+    //Buttons and search!
     let fall2021button = d3.select("#fall2021button");
     let spring2022button = d3.select("#spring2022button");
     let fall2022button = d3.select("#fall2022button");
-	let inputClass = d3.select('#inputClass')
-	let inputClassValue = inputClass.property('value')
-	let activeArray = fall2021_array
+	  let inputClass = d3.select('#inputClass')
+  	let inputClassValue = inputClass.property('value')
+  	let activeArray = fall2021_array
 
     fall2021button.on("click", function(){
 		fall2021button.classed('active-button', true),
@@ -347,13 +348,9 @@ fetch(url)
 		}
 	}
 
-	inputClass.on('input', ()=>{
-		inputClassValue = inputClass.property('value')
-	})
-
 	d3.select('button.search').on('click', ()=>{
 		console.log(activeArray)
-		let specificArray = generateSpecificArray(inputClassValue)
+		let specificArray = generateSpecificArray(inputClass.property('value'))
 		console.log(specificArray)
 		drawGraph(compileEverything(specificArray))
 	})
