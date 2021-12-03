@@ -224,17 +224,12 @@ fetch(url)
     xAxis.tickFormat((d, i) => xTickLabels[i]);
     svg.append("g").attr("transform", `translate(0, ${height})`).call(xAxis);
 
-    //Build yScale and xAxis
+    //Build yScale and yAxis
     let yScale = d3
       .scaleBand()
       .range([height, 0])
       .domain(range(168, 0, -1))
       .padding(0);
-
-    let yAxis = d3.axisLeft(yScale);
-    svg
-      .append("g")
-      .call(yAxis.tickValues(range(0, 169, 12)).tickFormat((d, i) => times[i]));
 
     //Make Tooltip
     const tooltip = d3
@@ -262,6 +257,7 @@ fetch(url)
         .domain([0, real_max])
         .interpolator(interpolatorArray[colorCounter]);
 
+        console.log(yScale.bandwidth())
       //add the data rects!
       svg
         .selectAll("rect")
@@ -295,6 +291,17 @@ fetch(url)
         .transition()
         .duration(800)
         .style("fill", (d) => color(d[2]));
+
+      let yAxis = d3.axisLeft(yScale);
+      svg.append("g")
+      .attr('class', 'gridlines')
+      .attr('transform', `translate(0, ${yScale.bandwidth()/2})`)
+      .call(
+        yAxis
+          .tickValues(range(0, 169, 12))
+          .tickFormat((d, i) => times[i])
+          .tickSize(-width)
+      );
 
       svg
         .append("text")

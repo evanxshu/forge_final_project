@@ -9,6 +9,11 @@
   pointer-events: none;
   font-size: small;
 }
+.gridlines line {
+  stroke: rgb(161, 161, 161);
+  stroke-width: 0.5px;
+  pointer-events: none;
+}
 
 #dataviz {
   display: flex;
