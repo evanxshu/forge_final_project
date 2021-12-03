@@ -303,7 +303,6 @@ fetch(url)
     let spring2022button = d3.select("#spring2022button");
     let fall2022button = d3.select("#fall2022button");
 	  let inputClass = d3.select('#inputClass')
-  	let inputClassValue = inputClass.property('value')
   	let activeArray = fall2021_array
 
     fall2021button.on("click", function(){
@@ -345,15 +344,24 @@ fetch(url)
 			} else{
 				return activeArray
 			}
-		}
+		} else{
+      return activeArray
+    }
 	}
 
-	d3.select('button.search').on('click', ()=>{
-		console.log(activeArray)
-		let specificArray = generateSpecificArray(inputClass.property('value'))
-		console.log(specificArray)
-		drawGraph(compileEverything(specificArray))
-	})
+  //reactive search (no need to press the search button)
+  d3.select('#inputClass').on('input', () =>{
+    let reactiveArray = generateSpecificArray(inputClass.property('value'))
+    drawGraph(compileEverything(reactiveArray))
+  })
+  
+  // search button
+	// d3.select('button.search').on('click', ()=>{
+	// 	// console.log(activeArray)
+	// 	let specificArray = generateSpecificArray(inputClass.property('value'))
+	// 	// console.log(specificArray)
+	// 	drawGraph(compileEverything(specificArray))
+	// })
 
   })
   .catch(function (error) {
