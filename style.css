@@ -9,9 +9,9 @@
   pointer-events: none;
   font-size: small;
 }
-.gridlines line {
-  stroke: rgb(161, 161, 161);
-  stroke-width: 0.5px;
+.tick line {
+  stroke: rgb(0, 0, 0);
+  stroke-width: 1px;
   pointer-events: none;
 }
 .tick{

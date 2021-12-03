@@ -234,11 +234,9 @@ fetch(url)
     let yAxis = d3
       .axisLeft(yScale)
       .tickValues(range(0, 169, 12))
-      .tickFormat((d, i) => times[i]);
-    svg
-      .append("g")
-      .attr("transform", `translate(0, ${yScale.bandwidth() / 2})`)
-      .call(yAxis);
+      .tickFormat((d, i) => times[i])
+      .tickSize(-width);
+
 
     //Make Tooltip
     const tooltip = d3
@@ -311,6 +309,12 @@ fetch(url)
         .duration(800)
         .style("fill", (d) => color(d[2]));
 
+        svg.selectAll('.yAxis').remove()
+        svg
+        .append("g")
+        .attr('class', 'yAxis')
+        .attr("transform", `translate(0, ${yScale.bandwidth() / 2})`)
+        .call(yAxis);
     }
 
     //Draw initial graph
