@@ -230,6 +230,15 @@ fetch(url)
       .range([height, 0])
       .domain(range(168, 0, -1))
       .padding(0);
+    
+    let yAxis = d3
+      .axisLeft(yScale)
+      .tickValues(range(0, 168, 12))
+      .tickFormat((d, i) => times[i]);
+    svg
+      .append("g")
+      .attr("transform", `translate(0, ${yScale.bandwidth() / 2})`)
+      .call(yAxis);
 
     //Make Tooltip
     const tooltip = d3
@@ -237,6 +246,16 @@ fetch(url)
       .append("div")
       .attr("id", "tooltip")
       .style("opacity", 0);
+
+    //title
+    svg
+    .append("text")
+    .attr("x", width / 2)
+    .attr("y", 10 - margin.top / 2)
+    .attr("text-anchor", "middle")
+    .style("font-size", "20px")
+    .style("font-family", "Courier New")
+    .text("UVA Classes Heat Map");
 
     //decide colorscheme for everytime graph is drawn
     const interpolatorArray = [
@@ -292,25 +311,6 @@ fetch(url)
         .duration(800)
         .style("fill", (d) => color(d[2]));
 
-      let yAxis = d3
-        .axisLeft(yScale)
-        .tickValues(range(0, 168, 12))
-        .tickFormat((d, i) => times[i])
-        .tickSize(-width, 0);
-      svg
-        .append("g")
-        .attr("class", "gridlines")
-        .attr("transform", `translate(0, ${yScale.bandwidth() / 2})`)
-        .call(yAxis);
-
-      svg
-        .append("text")
-        .attr("x", width / 2)
-        .attr("y", 10 - margin.top / 2)
-        .attr("text-anchor", "middle")
-        .style("font-size", "20px")
-        .style("font-family", "Courier New")
-        .text("UVA Classes Heat Map");
     }
 
     //Draw initial graph
