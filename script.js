@@ -230,13 +230,13 @@ fetch(url)
       .range([height, 0])
       .domain(range(168, 0, -1))
       .padding(0);
-    
+
     let yAxis = d3
       .axisLeft(yScale)
       .tickValues(range(0, 169, 12))
       .tickFormat((d, i) => times[i])
-      .tickSize(-width);
-
+      .tickSize(-width)
+      .tickSizeOuter(0);
 
     //Make Tooltip
     const tooltip = d3
@@ -247,13 +247,13 @@ fetch(url)
 
     //title
     svg
-    .append("text")
-    .attr("x", width / 2)
-    .attr("y", 10 - margin.top / 2)
-    .attr("text-anchor", "middle")
-    .style("font-size", "20px")
-    .style("font-family", "Courier New")
-    .text("UVA Classes Heat Map");
+      .append("text")
+      .attr("x", width / 2)
+      .attr("y", 10 - margin.top / 2)
+      .attr("text-anchor", "middle")
+      .style("font-size", "20px")
+      .style("font-family", "Courier New")
+      .text("UVA Classes Heat Map");
 
     //decide colorscheme for everytime graph is drawn
     const interpolatorArray = [
@@ -274,7 +274,6 @@ fetch(url)
         .domain([0, real_max])
         .interpolator(interpolatorArray[colorCounter]);
 
-      console.log(yScale.bandwidth());
       //add the data rects!
       svg
         .selectAll("rect")
@@ -309,10 +308,10 @@ fetch(url)
         .duration(800)
         .style("fill", (d) => color(d[2]));
 
-        svg.selectAll('.yAxis').remove()
-        svg
+      svg.selectAll(".yAxis").remove();
+      svg
         .append("g")
-        .attr('class', 'yAxis')
+        .attr("class", "yAxis")
         .attr("transform", `translate(0, ${yScale.bandwidth() / 2})`)
         .call(yAxis);
     }
@@ -378,7 +377,9 @@ fetch(url)
 
     //reactive search (no need to press the search button)
     d3.select("#inputClass").on("input", () => {
-      let reactiveArray = generateSpecificArray(inputClass.property("value").trim());
+      let reactiveArray = generateSpecificArray(
+        inputClass.property("value").trim()
+      );
       drawnArray = reactiveArray;
       drawGraph(compileEverything(reactiveArray));
     });
