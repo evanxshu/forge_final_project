@@ -257,7 +257,7 @@ fetch(url)
         .domain([0, real_max])
         .interpolator(interpolatorArray[colorCounter]);
 
-        console.log(yScale.bandwidth())
+      console.log(yScale.bandwidth());
       //add the data rects!
       svg
         .selectAll("rect")
@@ -292,16 +292,16 @@ fetch(url)
         .duration(800)
         .style("fill", (d) => color(d[2]));
 
-      let yAxis = d3.axisLeft(yScale);
-      svg.append("g")
-      .attr('class', 'gridlines')
-      .attr('transform', `translate(0, ${yScale.bandwidth()/2})`)
-      .call(
-        yAxis
-          .tickValues(range(0, 169, 12))
-          .tickFormat((d, i) => times[i])
-          .tickSize(-width)
-      );
+      let yAxis = d3
+        .axisLeft(yScale)
+        .tickValues(range(0, 168, 12))
+        .tickFormat((d, i) => times[i])
+        .tickSize(-width, 0);
+      svg
+        .append("g")
+        .attr("class", "gridlines")
+        .attr("transform", `translate(0, ${yScale.bandwidth() / 2})`)
+        .call(yAxis);
 
       svg
         .append("text")
