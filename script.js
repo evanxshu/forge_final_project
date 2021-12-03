@@ -210,24 +210,24 @@ fetch(url)
       .attr("height", height + margin.top + margin.bottom)
       .style("border", "1px solid grey")
       .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
     //Build xScale and xAxis
     let xScale = d3
       .scaleBand()
-      .range([0, width])
+      .rangeRound([0, width])
       .domain(["M", "T", "W", "R", "F"])
       .padding(0.05);
 
     let xAxis = d3.axisBottom(xScale);
     let xTickLabels = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
     xAxis.tickFormat((d, i) => xTickLabels[i]);
-    svg.append("g").attr("transform", `translate(0, ${height})`).call(xAxis);
+    svg.append("g").attr("transform", `translate(0,${height})`).call(xAxis);
 
     //Build yScale and yAxis
     let yScale = d3
       .scaleBand()
-      .range([height, 0])
+      .rangeRound([height, 0])
       .domain(range(168, 0, -1))
       .padding(0);
 
@@ -237,6 +237,10 @@ fetch(url)
       .tickFormat((d, i) => times[i])
       .tickSize(-width)
       .tickSizeOuter(0);
+
+    const halfBandwidth = yScale.bandwidth()/2
+
+
 
     //Make Tooltip
     const tooltip = d3
@@ -267,8 +271,10 @@ fetch(url)
     let colorCounter = 0;
 
     function drawGraph(currentArray) {
+      let compiledArray = compileEverything(currentArray);
+
       //Color Scale
-      let real_max = Math.max(...currentArray.map((block) => block[2]));
+      let real_max = Math.max(...compiledArray.map((block) => block[2]));
       let color = d3
         .scaleSequential()
         .domain([0, real_max])
@@ -277,7 +283,7 @@ fetch(url)
       //add the data rects!
       svg
         .selectAll("rect")
-        .data(currentArray)
+        .data(compiledArray)
         .join("rect")
         .attr("x", (d) => xScale(d[0]))
         .attr("y", (d) => yScale(d[1]))
@@ -308,17 +314,18 @@ fetch(url)
         .duration(800)
         .style("fill", (d) => color(d[2]));
 
-      svg.selectAll(".yAxis").remove();
-      svg
+        svg.select('.yAxis').remove()
+        svg
         .append("g")
         .attr("class", "yAxis")
-        .attr("transform", `translate(0, ${yScale.bandwidth() / 2})`)
+        .attr("transform", `translate(0, ${halfBandwidth})`)
         .call(yAxis);
     }
+  
 
     //Draw initial graph
 
-    drawGraph(compileEverything(fall2021_array));
+    drawGraph(fall2021_array);
 
     //Buttons and search!
     let fall2021button = d3.select("#fall2021button");
@@ -333,7 +340,7 @@ fetch(url)
         spring2022button.classed("active-button", false),
         fall2022button.classed("active-button", false);
       activeArray = fall2021_array;
-      drawGraph(compileEverything(fall2021_array));
+      drawGraph(fall2021_array);
     });
     spring2022button.on("click", function () {
       fall2021button.classed("active-button", false),
@@ -341,7 +348,7 @@ fetch(url)
         fall2022button.classed("active-button", false);
       activeArray = spring2022_array;
       drawnArray = spring2022_array;
-      drawGraph(compileEverything(spring2022_array));
+      drawGraph(spring2022_array);
     });
     fall2022button.on("click", function () {
       fall2021button.classed("active-button", false),
@@ -349,7 +356,7 @@ fetch(url)
         fall2022button.classed("active-button", true);
       activeArray = fall2022_array;
       drawnArray = fall2022_array;
-      drawGraph(compileEverything(fall2022_array));
+      drawGraph(fall2022_array);
     });
 
     function generateSpecificArray(coursecode) {
@@ -381,17 +388,17 @@ fetch(url)
         inputClass.property("value").trim()
       );
       drawnArray = reactiveArray;
-      drawGraph(compileEverything(reactiveArray));
+      drawGraph(reactiveArray);
     });
 
     // toggle color
     d3.select("#toggleColor").on("click", () => {
       if (colorCounter < interpolatorArray.length - 1) {
         ++colorCounter;
-        drawGraph(compileEverything(drawnArray));
+        drawGraph(drawnArray);
       } else {
         colorCounter = 0;
-        drawGraph(compileEverything(drawnArray));
+        drawGraph(cdrawnArray);
       }
     });
     // search button
