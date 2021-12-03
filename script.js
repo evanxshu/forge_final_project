@@ -378,7 +378,7 @@ fetch(url)
 
     //reactive search (no need to press the search button)
     d3.select("#inputClass").on("input", () => {
-      let reactiveArray = generateSpecificArray(inputClass.property("value"));
+      let reactiveArray = generateSpecificArray(inputClass.property("value").trim());
       drawnArray = reactiveArray;
       drawGraph(compileEverything(reactiveArray));
     });
