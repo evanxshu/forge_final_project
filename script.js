@@ -175,8 +175,7 @@ fetch(url)
       (course) => course[12] == "2022 Fall"
     );
 
-    const anth_fall2021 = fall2021_array.filter((course) => course[0] == "ANTH");
-
+    document.getElementById("inputClass").value = "";
     // check specific start times with these comments:
     // const monday = fall2021_array.filter(course => course[8].includes("M"))
     // console.log(monday.filter(course => course[9] == ""))
@@ -244,13 +243,24 @@ fetch(url)
       .attr("id", "tooltip")
       .style("opacity", 0);
 
+    //decide colorscheme for everytime graph is drawn
+    const interpolatorArray = [
+      d3.interpolateMagma,
+      d3.interpolateBlues,
+      d3.interpolateGreens,
+      d3.interpolateReds,
+      d3.interpolateYlOrRd,
+      d3.interpolateGreys,
+    ];
+    let colorCounter = 0;
+
     function drawGraph(currentArray) {
       //Color Scale
       let real_max = Math.max(...currentArray.map((block) => block[2]));
       let color = d3
         .scaleSequential()
         .domain([0, real_max])
-        .interpolator(d3.interpolateMagma);
+        .interpolator(interpolatorArray[colorCounter]);
 
       //add the data rects!
       svg
@@ -295,74 +305,90 @@ fetch(url)
         .style("font-family", "Courier New")
         .text("UVA Classes Heat Map");
     }
-	  //Draw initial graph
+
+    //Draw initial graph
+
     drawGraph(compileEverything(fall2021_array));
 
     //Buttons and search!
     let fall2021button = d3.select("#fall2021button");
     let spring2022button = d3.select("#spring2022button");
     let fall2022button = d3.select("#fall2022button");
-	  let inputClass = d3.select('#inputClass')
-  	let activeArray = fall2021_array
+    let inputClass = d3.select("#inputClass");
+    let activeArray = fall2021_array;
+    let drawnArray = fall2021_array;
 
-    fall2021button.on("click", function(){
-		fall2021button.classed('active-button', true),
-		spring2022button.classed('active-button', false),
-		fall2022button.classed('active-button', false)
-		activeArray = fall2021_array
-      	drawGraph(compileEverything(fall2021_array))
-	}
-	
-    );
-    spring2022button.on("click", function(){
-		fall2021button.classed('active-button', false),
-		spring2022button.classed('active-button', true),
-		fall2022button.classed('active-button', false)
-		activeArray = spring2022_array
-		drawGraph(compileEverything(spring2022_array))
-	}
-    );
-    fall2022button.on("click", function(){
-		fall2021button.classed('active-button', false),
-		spring2022button.classed('active-button', false),
-		fall2022button.classed('active-button', true)
-		activeArray = fall2022_array
-		drawGraph(compileEverything(fall2022_array))
-	}
-    );
+    fall2021button.on("click", function () {
+      fall2021button.classed("active-button", true),
+        spring2022button.classed("active-button", false),
+        fall2022button.classed("active-button", false);
+      activeArray = fall2021_array;
+      drawGraph(compileEverything(fall2021_array));
+    });
+    spring2022button.on("click", function () {
+      fall2021button.classed("active-button", false),
+        spring2022button.classed("active-button", true),
+        fall2022button.classed("active-button", false);
+      activeArray = spring2022_array;
+      drawnArray = spring2022_array;
+      drawGraph(compileEverything(spring2022_array));
+    });
+    fall2022button.on("click", function () {
+      fall2021button.classed("active-button", false),
+        spring2022button.classed("active-button", false),
+        fall2022button.classed("active-button", true);
+      activeArray = fall2022_array;
+      drawnArray = fall2022_array;
+      drawGraph(compileEverything(fall2022_array));
+    });
 
-	
-	function generateSpecificArray(coursecode){
-		if (coursecode){
-			let courseCodeArray = coursecode.split(" ")
-			if (courseCodeArray.length == 1){
-				let newActiveArray = activeArray.filter((course) => course[0] == courseCodeArray[0].toUpperCase())
-				return (newActiveArray.length > 0? newActiveArray: activeArray)
-			} else if (courseCodeArray.length == 2) {
-				let newActiveArray2 = activeArray.filter((course) => (course[0] == courseCodeArray[0].toUpperCase())&&(course[1] == courseCodeArray[1]))
-				return (newActiveArray2.length > 0? newActiveArray2: activeArray)
-			} else{
-				return activeArray
-			}
-		} else{
-      return activeArray
+    function generateSpecificArray(coursecode) {
+      if (coursecode) {
+        let courseCodeArray = coursecode.split(" ");
+        if (courseCodeArray.length == 1) {
+          let newActiveArray = activeArray.filter(
+            (course) => course[0] == courseCodeArray[0].toUpperCase()
+          );
+          return newActiveArray.length > 0 ? newActiveArray : activeArray;
+        } else if (courseCodeArray.length == 2) {
+          let newActiveArray2 = activeArray.filter(
+            (course) =>
+              course[0] == courseCodeArray[0].toUpperCase() &&
+              course[1] == courseCodeArray[1]
+          );
+          return newActiveArray2.length > 0 ? newActiveArray2 : activeArray;
+        } else {
+          return activeArray;
+        }
+      } else {
+        return activeArray;
+      }
     }
-	}
 
-  //reactive search (no need to press the search button)
-  d3.select('#inputClass').on('input', () =>{
-    let reactiveArray = generateSpecificArray(inputClass.property('value'))
-    drawGraph(compileEverything(reactiveArray))
-  })
-  
-  // search button
-	// d3.select('button.search').on('click', ()=>{
-	// 	// console.log(activeArray)
-	// 	let specificArray = generateSpecificArray(inputClass.property('value'))
-	// 	// console.log(specificArray)
-	// 	drawGraph(compileEverything(specificArray))
-	// })
+    //reactive search (no need to press the search button)
+    d3.select("#inputClass").on("input", () => {
+      let reactiveArray = generateSpecificArray(inputClass.property("value"));
+      drawnArray = reactiveArray;
+      drawGraph(compileEverything(reactiveArray));
+    });
 
+    // toggle color
+    d3.select("#toggleColor").on("click", () => {
+      if (colorCounter < interpolatorArray.length - 1) {
+        ++colorCounter;
+        drawGraph(compileEverything(drawnArray));
+      } else {
+        colorCounter = 0;
+        drawGraph(compileEverything(drawnArray));
+      }
+    });
+    // search button
+    // d3.select('button.search').on('click', ()=>{
+    // 	// console.log(activeArray)
+    // 	let specificArray = generateSpecificArray(inputClass.property('value'))
+    // 	// console.log(specificArray)
+    // 	drawGraph(compileEverything(specificArray))
+    // })
   })
   .catch(function (error) {
     console.log("Fetch failed!");
