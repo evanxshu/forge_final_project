@@ -97,7 +97,7 @@ function blockToTime(block) {
   let minutes = (parseInt(block) - hours * 12) * 5;
   let padHours = zeroPad(hours + 8, 2);
   let padMinutes = zeroPad(minutes, 2);
-  return `${padHours}:${padMinutes}:00`;
+  return `${padHours}:${padMinutes}`;
 }
 
 function blockToRange(block) {
@@ -165,12 +165,7 @@ fetch(url)
   .then(function (data) {
     const big_array = data.class_schedules.records;
     const with_meeting_days = big_array.filter((course) => course[8] != "");
-    const fall2021_array = with_meeting_days.filter(
-      (course) => course[12] == "2021 Fall"
-    );
-    const spring2022_array = with_meeting_days.filter(
-      (course) => course[12] == "2022 Spring"
-    );
+
     const fall2022_array = with_meeting_days.filter(
       (course) => course[12] == "2022 Fall"
     );
@@ -322,35 +317,16 @@ fetch(url)
 
     //Draw initial graph
 
-    drawGraph(fall2021_array);
+    drawGraph(fall2022_array);
 
     //Buttons and search!
-    let fall2021button = d3.select("#fall2021button");
-    let spring2022button = d3.select("#spring2022button");
     let fall2022button = d3.select("#fall2022button");
     let inputClass = d3.select("#inputClass");
-    let activeArray = fall2021_array;
-    let drawnArray = fall2021_array;
+    let activeArray = fall2022_array;
+    let drawnArray = fall2022_array;
 
-    fall2021button.on("click", function () {
-      fall2021button.classed("active-button", true),
-        spring2022button.classed("active-button", false),
-        fall2022button.classed("active-button", false);
-      activeArray = fall2021_array;
-      drawGraph(fall2021_array);
-    });
-    spring2022button.on("click", function () {
-      fall2021button.classed("active-button", false),
-        spring2022button.classed("active-button", true),
-        fall2022button.classed("active-button", false);
-      activeArray = spring2022_array;
-      drawnArray = spring2022_array;
-      drawGraph(spring2022_array);
-    });
     fall2022button.on("click", function () {
-      fall2021button.classed("active-button", false),
-        spring2022button.classed("active-button", false),
-        fall2022button.classed("active-button", true);
+      fall2022button.classed("active-button", true);
       activeArray = fall2022_array;
       drawnArray = fall2022_array;
       drawGraph(fall2022_array);
